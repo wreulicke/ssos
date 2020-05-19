@@ -1,0 +1,30 @@
+builds:
+  - main: ./cmd/ssos
+    binary: ssos
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    ldflags:
+      - -s -w
+checksum:
+  name_template: checksums.txt
+archives:
+  - format: binary
+snapshot:
+  name_template: master
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "Merge pull request"
+      - "Merge branch"
+release:
+  github:
+    owner: wreulicke
+    name: ssos
