@@ -26,3 +26,7 @@ Flags:
 
 Use "ssos [command] --help" for more information about a command.
 ```
+
+## TODO
+
+* Release to GitHub Release
