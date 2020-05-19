@@ -4,6 +4,8 @@
 You can setup your own user and ssh keys in EC2 instance over AWS Systems Manager.
 You don't need private key for EC2 instance forever.
 
+This is inspired by [ssh-over-ssm](https://github.com/elpy1/ssh-over-ssm), Thanks @elpy1.
+
 ## Usage
 
 ```bash
