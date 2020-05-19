@@ -37,3 +37,4 @@ I have just checked this only in Amazon Linux2.
 
 * Release to GitHub Release
 * Wait termination of command executed via SSM
+* Allow the user created to use sudo
