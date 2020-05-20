@@ -2,9 +2,8 @@ package ssos
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
@@ -15,6 +14,8 @@ sudo usermod -aG adm,wheel %s
 `
 
 func CreateUser(ssmCli *ssm.Client, instanceIds []string, user string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	req := ssmCli.SendCommandRequest(&ssm.SendCommandInput{
 		InstanceIds:  instanceIds,
 		DocumentName: aws.String("AWS-RunShellScript"),
@@ -23,9 +24,14 @@ func CreateUser(ssmCli *ssm.Client, instanceIds []string, user string) error {
 			"commands": []string{fmt.Sprintf(createUserTmpl, user, user)},
 		},
 	})
-	res, err := req.Send(context.Background())
+	res, err := req.Send(ctx)
 	if err != nil {
 		return err
 	}
-	return json.NewEncoder(os.Stdout).Encode(res)
+	commandID := res.Command.CommandId
+	err = WaitCommandInvocations(ctx, ssmCli, commandID)
+	if err != nil {
+		return err
+	}
+	return PrintCommandOutput(ctx, ssmCli, commandID)
 }

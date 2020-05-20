@@ -3,10 +3,9 @@ package ssos
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"io/ioutil"
-	"os"
 	"text/template"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
@@ -18,6 +17,8 @@ echo '{{.publicKey}}'| tee -a ${x}/.ssh/authorized_keys
 `
 
 func AddKey(ssmCli *ssm.Client, instanceIds []string, user string, publicKeyPath string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
 	bs, err := ioutil.ReadFile(publicKeyPath)
 	if err != nil {
 		return err
@@ -44,9 +45,11 @@ func AddKey(ssmCli *ssm.Client, instanceIds []string, user string, publicKeyPath
 			"commands": []string{b.String()},
 		},
 	})
-	res, err := req.Send(context.Background())
+	res, err := req.Send(ctx)
+	commandID := res.Command.CommandId
+	err = WaitCommandInvocations(ctx, ssmCli, commandID)
 	if err != nil {
 		return err
 	}
-	return json.NewEncoder(os.Stdout).Encode(res)
+	return PrintCommandOutput(ctx, ssmCli, commandID)
 }
