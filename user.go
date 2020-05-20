@@ -9,8 +9,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
-var createUserTmpl = `sudo useradd %s
+var createUserTmpl = `sudo useradd %s || exit 1
 sudo usermod -aG adm,wheel %s
+echo "%s ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/%s
 `
 
 func CreateUser(ssmCli *ssm.Client, instanceIds []string, user string) error {
@@ -21,7 +22,7 @@ func CreateUser(ssmCli *ssm.Client, instanceIds []string, user string) error {
 		DocumentName: aws.String("AWS-RunShellScript"),
 		Comment:      aws.String("create user"),
 		Parameters: map[string][]string{
-			"commands": []string{fmt.Sprintf(createUserTmpl, user, user)},
+			"commands": []string{fmt.Sprintf(createUserTmpl, user, user, user, user)},
 		},
 	})
 	res, err := req.Send(ctx)

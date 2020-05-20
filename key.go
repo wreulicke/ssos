@@ -12,7 +12,7 @@ import (
 )
 
 var AddKeyCommandTmpl = `u=$(getent passwd {{.user}}) && x=$(echo $u |cut -d: -f6) || exit 1
-install -d -m700 -o{{.user}} ${x}/.ssh; grep '{{.publicKey}}' ${x}/.ssh/authorized_keys && exit 0
+install -d -m700 -o{{.user}} ${x}/.ssh; grep '{{.publicKey}}' ${x}/.ssh/authorized_keys > /dev/null 2>/dev/null && exit 0
 echo '{{.publicKey}}'| tee -a ${x}/.ssh/authorized_keys
 `
 
