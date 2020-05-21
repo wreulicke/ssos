@@ -46,6 +46,9 @@ func AddKey(ssmCli *ssm.Client, instanceIds []string, user string, publicKeyPath
 		},
 	})
 	res, err := req.Send(ctx)
+	if err != nil {
+		return err
+	}
 	commandID := res.Command.CommandId
 	err = WaitCommandInvocations(ctx, ssmCli, commandID)
 	if err != nil {
