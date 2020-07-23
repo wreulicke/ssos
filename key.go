@@ -42,7 +42,7 @@ func AddKey(ssmCli *ssm.Client, instanceIds []string, user string, publicKeyPath
 		DocumentName: aws.String("AWS-RunShellScript"),
 		Comment:      aws.String("create user"),
 		Parameters: map[string][]string{
-			"commands": []string{b.String()},
+			"commands": {b.String()},
 		},
 	})
 	res, err := req.Send(ctx)

@@ -22,7 +22,7 @@ func CreateUser(ssmCli *ssm.Client, instanceIds []string, user string) error {
 		DocumentName: aws.String("AWS-RunShellScript"),
 		Comment:      aws.String("create user"),
 		Parameters: map[string][]string{
-			"commands": []string{fmt.Sprintf(createUserTmpl, user, user, user, user)},
+			"commands": {fmt.Sprintf(createUserTmpl, user, user, user, user)},
 		},
 	})
 	res, err := req.Send(ctx)
