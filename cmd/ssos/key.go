@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/spf13/cobra"
 	"github.com/wreulicke/ssos"
@@ -15,6 +17,9 @@ func NewAddKeyCommand(profile, region *string) *cobra.Command {
 		Use:   "add-ssh-key",
 		Short: "add-ssh-key",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if username == "" {
+				return errors.New("username is required")
+			}
 			c, err := utils.ReadAwsConfig(*profile, *region)
 			if err != nil {
 				return err
